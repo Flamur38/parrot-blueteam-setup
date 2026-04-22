@@ -1,0 +1,153 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# === History ===
+HISTCONTROL=ignoredups:ignorespace
+HISTSIZE=100000
+HISTFILESIZE=200000
+HISTTIMEFORMAT="%F %T "
+shopt -s histappend
+shopt -s checkwinsize
+
+# === Color support ===
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+  debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# === dircolors ===
+if [ -x /usr/bin/dircolors ]; then
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+
+# === Man colors ===
+man() {
+  env \
+    LESS_TERMCAP_mb=$'\e[01;31m' \
+    LESS_TERMCAP_md=$'\e[01;31m' \
+    LESS_TERMCAP_me=$'\e[0m' \
+    LESS_TERMCAP_se=$'\e[0m' \
+    LESS_TERMCAP_so=$'\e[01;44;33m' \
+    LESS_TERMCAP_ue=$'\e[0m' \
+    LESS_TERMCAP_us=$'\e[01;32m' \
+    man "$@"
+}
+
+# === Exports ===
+export EDITOR=nvim
+export TERM=xterm-256color
+export PATH="$HOME/.local/bin:$PATH"
+
+# === Aliases ===
+alias ls='ls --color=auto'
+alias ll='ls -lh --color=auto'
+alias la='ls -lha --color=auto'
+alias l='ls -CF'
+alias dir='dir --color=auto'
+alias vdir='vdir --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias cls='clear'
+alias em='emacs -nw'
+alias _='sudo'
+alias _i='sudo -i'
+alias fucking='sudo'
+alias please='sudo'
+alias tarnow='tar -acf '
+alias untar='tar -zxvf '
+alias wget='wget -c '
+alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+
+# === SOC/DFIR aliases ===
+alias logs='cd /var/log && la'
+alias cases='cd ~/cases && la'
+alias pcaps='cd ~/cases/pcaps 2>/dev/null || echo "[!] No pcaps dir — run mkcase first"'
+alias iocs='cd ~/cases/iocs 2>/dev/null || echo "[!] No iocs dir — run mkcase first"'
+
+# === Encoding helpers ===
+function hex-encode() { echo "$@" | xxd -p; }
+function hex-decode() { echo "$@" | xxd -p -r; }
+function rot13()      { echo "$@" | tr 'A-Za-z' 'N-ZA-Mn-za-m'; }
+function b64e()       { echo "$@" | base64; }
+function b64d()       { echo "$@" | base64 -d; }
+function urle()       { python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$@"; }
+function urld()       { python3 -c "import urllib.parse,sys; print(urllib.parse.unquote(sys.argv[1]))" "$@"; }
+
+# === Case management ===
+mkcase() {
+  local name="$1"
+  if [[ -z "$name" ]]; then
+    echo "Usage: mkcase <case-name>"
+    return 1
+  fi
+  mkdir -p ~/cases/"$name"/{pcaps,logs,iocs,artifacts,notes,timeline,reports}
+  echo "[+] Case created: ~/cases/$name"
+  tree ~/cases/"$name" 2>/dev/null || la ~/cases/"$name"
+  cd ~/cases/"$name"
+}
+
+lscases() {
+  echo "[*] Active cases:"
+  ls -lh ~/cases/ 2>/dev/null || echo "[!] No cases directory found"
+}
+
+# === Bash completion ===
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+if [ -f ~/.bash_aliases ]; then
+  . ~/.bash_aliases
+fi
+
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    [ -r "$i" ] && . "$i"
+  done
+  unset i
+fi
+
+# === HackTheBox PS1 ===
+# Must be after profile.d so we chain on top of __vte_prompt_command
+__htb_ps1() {
+  local _exit=$?
+  local g='\[\e[38;2;197;244;103m\]'
+  local c='\[\e[38;2;46;231;182m\]'
+  local w='\[\e[38;5;231m\]'
+  local r='\[\e[38;2;255;62;62m\]'
+  local rst='\[\e[0m\]'
+
+  local err=''
+  [[ $_exit != 0 ]] && err="${w}[✗]${g}─"
+
+  local ip
+  ip=$(ip route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}')
+  [[ -z "$ip" ]] && ip="no-ip"
+
+  local user
+  [[ ${EUID} == 0 ]] && user="${r}\u${g}@${c}\h" || user="${w}\u${g}@${c}\h"
+
+  local nl=''
+  [[ "${__htb_first:-1}" == "0" ]] && nl=$'\n'
+  __htb_first=0
+
+  PS1="${nl}${g}┌─${err}[${g}${ip}${g}]─[${user}${g}]─[${g}\w${g}]"$'\n'"${g}└─╼ ${rst}${g}\$${rst} "
+}
+
+if [[ "${PROMPT_COMMAND}" != *"__htb_ps1"* ]]; then
+  PROMPT_COMMAND="__htb_ps1${PROMPT_COMMAND:+;${PROMPT_COMMAND}}"
+fi

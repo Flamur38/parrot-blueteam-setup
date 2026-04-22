@@ -1,0 +1,18 @@
+# ~/.profile
+
+if [ "${BASH-}" ] && [ "$BASH" != "/bin/sh" ]; then
+  if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+  fi
+fi
+
+if [ -d "$HOME/.local/bin" ]; then
+  PATH="$HOME/.local/bin:$PATH"
+fi
+
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    [ -r "$i" ] && . "$i"
+  done
+  unset i
+fi

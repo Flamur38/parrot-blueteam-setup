@@ -45,3 +45,33 @@
     dest: "{{ tmux_config_file }}"
     owner: "{{ local_user }}"
     mode: '0644'
+
+- name: Create tmux logs directory
+  ansible.builtin.file:
+    path: "{{ local_home }}/tmux_logs"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+
+- name: Create cases directory
+  ansible.builtin.file:
+    path: "{{ local_home }}/cases"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+
+- name: Deploy bashrc
+  ansible.builtin.copy:
+    src: bashrc
+    dest: "{{ local_home }}/.bashrc"
+    owner: "{{ local_user }}"
+    mode: '0644'
+    backup: yes
+
+- name: Deploy profile
+  ansible.builtin.copy:
+    src: profile
+    dest: "{{ local_home }}/.profile"
+    owner: "{{ local_user }}"
+    mode: '0644'
+    backup: yes
