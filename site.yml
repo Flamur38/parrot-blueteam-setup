@@ -1,0 +1,12 @@
+---
+- name: Parrot OS Blue Team Lab Setup
+  hosts: localhost
+  connection: local
+
+  roles:
+    - { role: terminal,  tags: ["terminal"] }
+    - { role: neovim,    tags: ["neovim"] }
+    - { role: i3wm,      tags: ["i3wm"] }
+    - { role: system,    tags: ["system"] }
+    - { role: soc_tools, tags: ["soc_tools", "tools"] }
+    - { role: dfir_tools, tags: ["dfir_tools", "tools"] }

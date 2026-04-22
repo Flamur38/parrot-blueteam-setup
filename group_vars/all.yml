@@ -1,0 +1,12 @@
+# User
+local_user: "{{ lookup('env', 'USER') }}"
+local_home: "{{ lookup('env', 'HOME') }}"
+
+# Paths
+config_dir: "{{ local_home }}/.config"
+local_bin:  "{{ local_home }}/.local/bin"
+
+# Theme
+colorscheme: "catppuccin-mocha"
+font_family: "JetBrainsMono Nerd Font"
+font_size:   "12"
