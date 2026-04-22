@@ -1,0 +1,12 @@
+---
+# Terminator
+terminator_config_dir: "{{ config_dir }}/terminator"
+
+# Tmux
+tmux_config_file:    "{{ local_home }}/.tmux.conf"
+tmux_plugin_dir:     "{{ local_home }}/.tmux/plugins"
+tpm_repo:            "https://github.com/tmux-plugins/tpm"
+
+# Theme (inherits from group_vars but can be overridden here)
+term_font_family: "{{ font_family }}"
+term_font_size:   "{{ font_size }}"

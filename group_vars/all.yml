@@ -7,6 +7,6 @@ config_dir: "{{ local_home }}/.config"
 local_bin:  "{{ local_home }}/.local/bin"
 
 # Theme
-colorscheme: "catppuccin-mocha"
-font_family: "JetBrainsMono Nerd Font"
-font_size:   "12"
+colorscheme: "hackthebox"
+font_family: "Hack"
+font_size:   "15"

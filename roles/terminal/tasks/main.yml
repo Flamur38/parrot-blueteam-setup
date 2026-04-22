@@ -1,0 +1,47 @@
+---
+- name: Install terminal packages
+  ansible.builtin.apt:
+    name:
+      - terminator
+      - tmux
+      - git
+      - curl
+      - fontconfig
+      - fonts-hack
+    state: present
+    update_cache: true
+
+- name: Create terminator config directory
+  ansible.builtin.file:
+    path: "{{ terminator_config_dir }}"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+
+- name: Deploy terminator config
+  ansible.builtin.template:
+    src: terminator.conf.j2
+    dest: "{{ terminator_config_dir }}/config"
+    owner: "{{ local_user }}"
+    mode: '0644'
+
+- name: Create tmux plugin directory
+  ansible.builtin.file:
+    path: "{{ tmux_plugin_dir }}"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+
+- name: Install tmux plugin manager (tpm)
+  ansible.builtin.git:
+    repo: "{{ tpm_repo }}"
+    dest: "{{ tmux_plugin_dir }}/tpm"
+    version: master
+  become: false
+
+- name: Deploy tmux config
+  ansible.builtin.template:
+    src: tmux.conf.j2
+    dest: "{{ tmux_config_file }}"
+    owner: "{{ local_user }}"
+    mode: '0644'

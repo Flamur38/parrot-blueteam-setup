@@ -1,0 +1,64 @@
+# === General ===
+set -g default-terminal "screen-256color"
+set -ga terminal-overrides ",*256col*:Tc"
+set -g history-limit 10000
+set -g base-index 1
+setw -g pane-base-index 1
+set -g renumber-windows on
+set -sg escape-time 10
+set -g focus-events on
+set -g mouse on
+
+# === Prefix ===
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# === Keybindings ===
+bind r source-file ~/.tmux.conf \; display "Config reloaded!"
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+unbind '"'
+unbind %
+
+# Pane navigation (vim-style)
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Pane resize
+bind -r H resize-pane -L 5
+bind -r J resize-pane -D 5
+bind -r K resize-pane -U 5
+bind -r L resize-pane -R 5
+
+# === HackTheBox Theme ===
+# bg=#1a2332  fg=#a4b1cd  green=#9fef00  cyan=#2ee7b6  accent=#313f55
+
+set -g status-position bottom
+set -g status-style "bg=#1a2332,fg=#a4b1cd"
+set -g status-left-length 40
+set -g status-right-length 80
+
+set -g status-left "#[bg=#9fef00,fg=#1a2332,bold] HTB #[bg=#313f55,fg=#9fef00] #S #[bg=#1a2332,fg=#313f55]  "
+set -g status-right "#[fg=#313f55]#[bg=#313f55,fg=#2ee7b6] %H:%M #[bg=#9fef00,fg=#1a2332,bold] #H "
+
+set -g window-status-format         "#[fg=#a4b1cd,bg=#1a2332]  #I:#W  "
+set -g window-status-current-format "#[bg=#313f55,fg=#9fef00,bold]  #I:#W  "
+set -g window-status-separator      ""
+
+set -g pane-border-style        "fg=#313f55"
+set -g pane-active-border-style "fg=#9fef00"
+
+set -g message-style "bg=#313f55,fg=#9fef00"
+
+# === Plugins (tpm) ===
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+
+set -g @continuum-restore 'on'
+
+run '~/.tmux/plugins/tpm/tpm'

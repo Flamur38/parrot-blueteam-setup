@@ -1,0 +1,42 @@
+[global_config]
+  title_transmit_bg_color = "#9fef00"
+  title_receive_bg_color  = "#2ee7b6"
+  title_inactive_bg_color = "#1a2332"
+  focus                   = system
+
+[keybindings]
+  split_horiz  = <Shift><Ctrl>o
+  split_vert   = <Shift><Ctrl>e
+  close_term   = <Shift><Ctrl>w
+  new_tab      = <Shift><Ctrl>t
+  next_tab     = <Ctrl>Tab
+  prev_tab     = <Shift><Ctrl>Tab
+  full_screen  = F11
+  toggle_zoom  = <Shift><Ctrl>x
+
+[profiles]
+  [[default]]
+    background_color        = "#1a2332"
+    foreground_color        = "#a4b1cd"
+    cursor_color            = "#313f55"
+    cursor_blink            = True
+    font                    = {{ term_font_family }} {{ term_font_size }}
+    use_system_font         = False
+    use_theme_colors        = False
+    scrollback_lines        = 5000
+    scrollbar_position      = hidden
+    palette                 = "#000000:#ff3e3e:#9fef00:#ffaf00:#004cff:#9f00ff:#2ee7b6:#ffffff:#666666:#ff8484:#c5f467:#ffcc5c:#5cb2ff:#c16cfa:#5cecc6:#ffffff"
+    login_shell             = False
+    show_titlebar           = False
+    copy_on_selection       = True
+
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type   = Window
+      parent = ""
+    [[[child1]]]
+      type   = Terminal
+      parent = window0
+
+[plugins]
