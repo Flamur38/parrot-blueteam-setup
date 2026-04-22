@@ -145,7 +145,7 @@ __htb_ps1() {
   [[ "${__htb_first:-1}" == "0" ]] && nl=$'\n'
   __htb_first=0
 
-  PS1="${nl}${g}┌─${err}[${g}${ip}${g}]─[${user}${g}]─[${g}\w${g}]"$'\n'"${g}└─╼ ${rst}${g}\$${rst} "
+  PS1="${nl}${g}┌─${err}[${w}${ip}${g}]─[${user}${g}]─[${w}\w${g}]"$'\n'"${g}└─╼ ${rst}${g}\$${rst} "
 }
 
 if [[ "${PROMPT_COMMAND}" != *"__htb_ps1"* ]]; then
