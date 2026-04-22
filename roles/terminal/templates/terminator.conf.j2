@@ -20,6 +20,7 @@
     foreground_color        = "#a4b1cd"
     cursor_color            = "#313f55"
     cursor_blink            = True
+    cursor_shape            = block
     font                    = {{ term_font_family }} {{ term_font_size }}
     use_system_font         = False
     use_theme_colors        = False
@@ -30,13 +31,30 @@
     show_titlebar           = False
     copy_on_selection       = True
 
+  [[investigation]]
+    background_color        = "#0a0a0a"
+    foreground_color        = "#8a8a8a"
+    cursor_color            = "#ff3e3e"
+    cursor_blink            = True
+    cursor_shape            = block
+    font                    = {{ term_font_family }} {{ term_font_size }}
+    use_system_font         = False
+    use_theme_colors        = False
+    scrollback_lines        = 10000
+    scrollbar_position      = hidden
+    palette                 = "#1a1a1a:#cc3333:#4a7a4a:#8a6a2a:#2a4a7a:#6a3a6a:#2a6a6a:#8a8a8a:#3a3a3a:#ff3e3e:#5a9a5a:#aa8a3a:#3a6aaa:#8a4a8a:#3a8a8a:#aaaaaa"
+    login_shell             = False
+    show_titlebar           = False
+    copy_on_selection       = True
+
 [layouts]
   [[default]]
     [[[window0]]]
       type   = Window
       parent = ""
     [[[child1]]]
-      type   = Terminal
-      parent = window0
+      type     = Terminal
+      parent   = window0
+      profile  = default
 
 [plugins]

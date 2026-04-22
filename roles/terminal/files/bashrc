@@ -121,33 +121,56 @@ if [ -d /etc/profile.d ]; then
   unset i
 fi
 
-# === HackTheBox PS1 ===
-# Must be after profile.d so we chain on top of __vte_prompt_command
+# === PS1 — uncomment the one you want ===
+
+# -- HTB (default) --
 __htb_ps1() {
   local _exit=$?
   local g='\[\e[38;2;197;244;103m\]'
   local c='\[\e[38;2;46;231;182m\]'
-  local w='\[\e[38;5;231m\]'
+  local w='\[\e[38;2;164;177;205m\]'
   local r='\[\e[38;2;255;62;62m\]'
   local rst='\[\e[0m\]'
-
   local err=''
   [[ $_exit != 0 ]] && err="${w}[✗]${g}─"
-
   local ip
   ip=$(ip route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}')
   [[ -z "$ip" ]] && ip="no-ip"
-
   local user
   [[ ${EUID} == 0 ]] && user="${r}\u${g}@${c}\h" || user="${w}\u${g}@${c}\h"
-
   local nl=''
   [[ "${__htb_first:-1}" == "0" ]] && nl=$'\n'
   __htb_first=0
-
-  PS1="${nl}${g}┌─${err}[${w}${ip}${g}]─[${user}${g}]─[${w}\w${g}]"$'\n'"${g}└─╼ ${rst}${g}\$${rst} "
+  PS1="${nl}${g}┌─${err}[${g}${ip}${g}]─[${user}${g}]─[${g}\w${g}]"$'\n'"${g}└─╼ ${rst}${g}\$${rst} "
 }
 
-if [[ "${PROMPT_COMMAND}" != *"__htb_ps1"* ]]; then
-  PROMPT_COMMAND="__htb_ps1${PROMPT_COMMAND:+;${PROMPT_COMMAND}}"
+# -- Investigation (night mode) --
+__inv_ps1() {
+  local _exit=$?
+  local red='\[\e[38;2;180;40;40m\]'
+  local dim='\[\e[38;2;100;100;100m\]'
+  local w='\[\e[38;5;231m\]'
+  local rst='\[\e[0m\]'
+  local err=''
+  [[ $_exit != 0 ]] && err="${dim}[✗]${red}─"
+  local time
+  time=$(date +%H:%M)
+  local nl=''
+  [[ "${__inv_first:-1}" == "0" ]] && nl=$'\n'
+  __inv_first=0
+  PS1="${nl}${dim}[${red}${time}${dim}]─[${w}\w${dim}]"$'\n'"${red} ❯ ${rst}"
+}
+
+# === Active PS1 — comment/uncomment to switch ===
+# ACTIVE_PS1="htb"       # <-- change to "inv" for investigation mode
+ACTIVE_PS1="inv"
+
+if [[ "$ACTIVE_PS1" == "inv" ]]; then
+  if [[ "${PROMPT_COMMAND}" != *"__inv_ps1"* ]]; then
+    PROMPT_COMMAND="__inv_ps1${PROMPT_COMMAND:+;${PROMPT_COMMAND}}"
+  fi
+else
+  if [[ "${PROMPT_COMMAND}" != *"__htb_ps1"* ]]; then
+    PROMPT_COMMAND="__htb_ps1${PROMPT_COMMAND:+;${PROMPT_COMMAND}}"
+  fi
 fi
