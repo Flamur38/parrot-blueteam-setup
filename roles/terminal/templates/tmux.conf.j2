@@ -12,13 +12,13 @@ set -g mouse off
 set -g allow-rename off
 setw -g mode-keys vi
 
-# # === Prefix ===
+# === Prefix ===
 # unbind C-b
 # set -g prefix C-a
 # bind C-a send-prefix
 
 # === Keybindings ===
-bind r source-file ~/.tmux.conf \; display "Config reloaded!"
+bind r source-file ~/.tmux.conf \; display "config reloaded"
 bind | split-window -h -c "#{pane_current_path}"
 bind - split-window -v -c "#{pane_current_path}"
 unbind '"'
@@ -37,7 +37,7 @@ bind -r K resize-pane -U 5
 bind -r L resize-pane -R 5
 
 # Send pane to another window
-bind-key s command-prompt -p "Send pane to:" "join-pane -t '%%'"
+bind-key s command-prompt -p "send pane to:" "join-pane -t '%%'"
 
 # === Copy mode (vim keys) ===
 bind [ copy-mode
@@ -49,23 +49,34 @@ bind -T copy-mode-vi v send -X begin-selection
 bind -T copy-mode-vi y send -X copy-selection-and-cancel
 bind -T copy-mode-vi Escape send -X cancel
 
-# === HackTheBox Theme ===
+# === Theme — dual mode ===
+# HTB mode (default) — comment out and uncomment investigation block to switch
+# set -g status-position bottom
+# set -g status-style "bg=#1a2332,fg=#a4b1cd"
+# set -g status-left-length 40
+# set -g status-right-length 80
+# set -g status-left "#[bg=#c5f467,fg=#1a2332,bold] HTB #[bg=#313f55,fg=#c5f467] #S #[bg=#1a2332,fg=#313f55]  "
+# set -g status-right "#[fg=#313f55]#[bg=#313f55,fg=#2ee7b6] %H:%M #[bg=#c5f467,fg=#1a2332,bold] #H "
+# set -g window-status-format         "#[fg=#a4b1cd,bg=#1a2332]  #I:#W  "
+# set -g window-status-current-format "#[bg=#313f55,fg=#c5f467,bold]  #I:#W  "
+# set -g window-status-separator      ""
+# set -g pane-border-style        "fg=#313f55"
+# set -g pane-active-border-style "fg=#c5f467"
+# set -g message-style            "bg=#313f55,fg=#c5f467"
+
+# === Investigation mode — uncomment to switch ===
 set -g status-position bottom
-set -g status-style "bg=#1a2332,fg=#a4b1cd"
-set -g status-left-length 40
-set -g status-right-length 80
-
-set -g status-left "#[bg=#9fef00,fg=#1a2332,bold] HTB #[bg=#313f55,fg=#9fef00] #S #[bg=#1a2332,fg=#313f55]  "
-set -g status-right "#[fg=#313f55]#[bg=#313f55,fg=#2ee7b6] %H:%M #[bg=#9fef00,fg=#1a2332,bold] #H "
-
-set -g window-status-format         "#[fg=#a4b1cd,bg=#1a2332]  #I:#W  "
-set -g window-status-current-format "#[bg=#313f55,fg=#9fef00,bold]  #I:#W  "
+set -g status-style          "bg=#0a0a0a,fg=#646464"
+set -g status-left-length    40
+set -g status-right-length   80
+set -g status-left           "#[fg=#b42828,bold] inv #[fg=#3a3a3a]│#[fg=#646464] #S  "
+set -g status-right          "#[fg=#3a3a3a]│#[fg=#646464] %H:%M #[fg=#3a3a3a]│#[fg=#b42828] #H "
+set -g window-status-format         "#[fg=#3a3a3a]  #I:#W  "
+set -g window-status-current-format "#[fg=#b42828,bold]  #I:#W  "
 set -g window-status-separator      ""
-
-set -g pane-border-style        "fg=#313f55"
-set -g pane-active-border-style "fg=#9fef00"
-
-set -g message-style "bg=#313f55,fg=#9fef00"
+set -g pane-border-style        "fg=#1a1a1a"
+set -g pane-active-border-style "fg=#b42828"
+set -g message-style            "bg=#0a0a0a,fg=#b42828"
 
 # === Plugins ===
 set -g @plugin 'tmux-plugins/tpm'
