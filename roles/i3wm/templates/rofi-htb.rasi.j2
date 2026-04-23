@@ -1,0 +1,67 @@
+* {
+  bg:       #1a2332;
+  fg:       #a4b1cd;
+  green:    #c5f467;
+  dim:      #313f55;
+  red:      #ff3e3e;
+
+  background-color: transparent;
+  text-color:       @fg;
+  font:             "Hack 11";
+}
+
+window {
+  background-color: @bg;
+  border:           2px;
+  border-color:     @green;
+  border-radius:    6px;
+  width:            500px;
+  padding:          12px;
+}
+
+mainbox {
+  background-color: transparent;
+  children:         [ inputbar, listview ];
+  spacing:          8px;
+}
+
+inputbar {
+  background-color: @dim;
+  border-radius:    4px;
+  padding:          8px 12px;
+  children:         [ prompt, entry ];
+}
+
+prompt {
+  text-color:       @green;
+  padding:          0 6px 0 0;
+}
+
+entry {
+  text-color:       @fg;
+  placeholder:      "search...";
+  placeholder-color: #646464;
+}
+
+listview {
+  background-color: transparent;
+  lines:            8;
+  scrollbar:        false;
+  spacing:          4px;
+}
+
+element {
+  background-color: transparent;
+  border-radius:    4px;
+  padding:          6px 12px;
+}
+
+element selected {
+  background-color: @dim;
+  text-color:       @green;
+}
+
+element-icon {
+  size:  20px;
+  padding: 0 8px 0 0;
+}

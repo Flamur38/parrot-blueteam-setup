@@ -1,0 +1,114 @@
+---
+- name: Install i3 and related packages
+  ansible.builtin.apt:
+    name:
+      - i3
+      - i3status
+      - i3lock
+      - polybar
+      - rofi
+      - feh
+      - picom
+      - dunst
+      - arandr
+      - lm-sensors
+      - acpi
+      - fonts-hack
+      - fonts-font-awesome
+      - python3-pil
+    state: present
+    update_cache: true
+
+- name: Create config directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+  loop:
+    - "{{ i3_config_dir }}"
+    - "{{ polybar_config_dir }}"
+    - "{{ rofi_config_dir }}"
+    - "{{ wallpaper_dir }}"
+
+- name: Deploy i3 config
+  ansible.builtin.template:
+    src: i3.conf.j2
+    dest: "{{ i3_config_dir }}/config"
+    owner: "{{ local_user }}"
+    mode: '0644'
+
+- name: Deploy polybar config
+  ansible.builtin.template:
+    src: polybar.conf.j2
+    dest: "{{ polybar_config_dir }}/config.ini"
+    owner: "{{ local_user }}"
+    mode: '0644'
+
+- name: Deploy polybar launch script
+  ansible.builtin.template:
+    src: polybar-launch.sh.j2
+    dest: "{{ polybar_config_dir }}/launch.sh"
+    owner: "{{ local_user }}"
+    mode: '0755'
+
+- name: Deploy rofi config — HTB
+  ansible.builtin.template:
+    src: rofi-htb.rasi.j2
+    dest: "{{ rofi_config_dir }}/htb.rasi"
+    owner: "{{ local_user }}"
+    mode: '0644'
+
+- name: Deploy rofi config — investigation
+  ansible.builtin.template:
+    src: rofi-inv.rasi.j2
+    dest: "{{ rofi_config_dir }}/inv.rasi"
+    owner: "{{ local_user }}"
+    mode: '0644'
+
+- name: Deploy picom config
+  ansible.builtin.template:
+    src: picom.conf.j2
+    dest: "{{ config_dir }}/picom.conf"
+    owner: "{{ local_user }}"
+    mode: '0644'
+
+- name: Generate HTB wallpaper
+  ansible.builtin.shell: |
+    python3 -c "
+    from PIL import Image, ImageDraw
+    w, h = 1920, 1080
+    img = Image.new('RGB', (w, h), '#1a2332')
+    d = ImageDraw.Draw(img)
+    # subtle grid lines
+    for x in range(0, w, 80):
+        d.line([(x, 0), (x, h)], fill='#1e2a3a', width=1)
+    for y in range(0, h, 80):
+        d.line([(0, y), (w, y)], fill='#1e2a3a', width=1)
+    # HTB green accent line at bottom
+    d.rectangle([(0, h-3), (w, h)], fill='#c5f467')
+    img.save('{{ wallpaper_dir }}/htb.png')
+    "
+  become: false
+  args:
+    creates: "{{ wallpaper_dir }}/htb.png"
+
+- name: Generate investigation wallpaper
+  ansible.builtin.shell: |
+    python3 -c "
+    from PIL import Image, ImageDraw
+    w, h = 1920, 1080
+    img = Image.new('RGB', (w, h), '#0a0a0a')
+    d = ImageDraw.Draw(img)
+    # subtle grid lines
+    for x in range(0, w, 80):
+        d.line([(x, 0), (x, h)], fill='#111111', width=1)
+    for y in range(0, h, 80):
+        d.line([(0, y), (w, y)], fill='#111111', width=1)
+    # dark red accent line at bottom
+    d.rectangle([(0, h-3), (w, h)], fill='#b42828')
+    img.save('{{ wallpaper_dir }}/inv.png')
+    "
+  become: false
+  args:
+    creates: "{{ wallpaper_dir }}/inv.png"

@@ -1,0 +1,7 @@
+---
+i3_config_dir:    "{{ config_dir }}/i3"
+polybar_config_dir: "{{ config_dir }}/polybar"
+rofi_config_dir:  "{{ config_dir }}/rofi"
+wallpaper_dir:    "{{ local_home }}/.wallpapers"
+mod_key:          "Mod1"
+terminal:         "terminator"
