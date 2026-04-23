@@ -1,0 +1,4 @@
+---
+tools_dir: "{{ local_home }}/tools"
+cyberchef_dir: "{{ tools_dir }}/cyberchef"
+velociraptor_dir: "{{ tools_dir }}/velociraptor"

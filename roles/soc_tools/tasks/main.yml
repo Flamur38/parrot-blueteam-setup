@@ -1,0 +1,168 @@
+---
+- name: Create tools directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+  loop:
+    - "{{ tools_dir }}"
+    - "{{ cyberchef_dir }}"
+    - "{{ velociraptor_dir }}"
+
+# === Network analysis ===
+- name: Install network analysis tools
+  ansible.builtin.apt:
+    name:
+      - wireshark
+      - tshark
+      - tcpdump
+      - nmap
+      - netcat-openbsd
+      - suricata
+    state: present
+    update_cache: true
+  ignore_errors: true
+
+- name: Add user to wireshark group
+  ansible.builtin.user:
+    name: "{{ local_user }}"
+    groups: wireshark
+    append: yes
+
+- name: Download termshark binary
+  ansible.builtin.get_url:
+    url: "https://github.com/gcla/termshark/releases/download/v2.4.0/termshark_2.4.0_linux_x64.tar.gz"
+    dest: "/tmp/termshark.tar.gz"
+    mode: '0644'
+    force: false
+  ignore_errors: true
+
+- name: Extract termshark
+  ansible.builtin.unarchive:
+    src: /tmp/termshark.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  ignore_errors: true
+
+- name: Install termshark binary
+  ansible.builtin.copy:
+    src: /tmp/termshark_2.4.0_linux_x64/termshark
+    dest: /usr/local/bin/termshark
+    mode: '0755'
+    remote_src: yes
+  ignore_errors: true
+
+# === Log analysis ===
+- name: Install log analysis tools
+  ansible.builtin.apt:
+    name:
+      - jq
+      - lnav
+      - gawk
+      - ripgrep
+      - miller
+      - xmlstarlet
+    state: present
+  ignore_errors: true
+
+- name: Install python log analysis packages
+  ansible.builtin.pip:
+    name:
+      - pandas
+      - tabulate
+      - colorlog
+      - evtx
+    state: present
+    extra_args: --break-system-packages
+  become: false
+  ignore_errors: true
+
+# === CTF tools ===
+- name: Install CTF tools
+  ansible.builtin.apt:
+    name:
+      - binwalk
+      - exiftool
+      - steghide
+      - foremost
+      - pngcheck
+      - xxd
+      - hexedit
+      - file
+      - gdb
+      - ltrace
+      - strace
+      - radare2
+    state: present
+  ignore_errors: true
+
+- name: Install python CTF and network packages
+  ansible.builtin.pip:
+    name:
+      - pwntools
+      - pycryptodome
+      - requests
+      - beautifulsoup4
+      - scapy
+    state: present
+    extra_args: --break-system-packages
+  become: false
+  ignore_errors: true
+
+# === Velociraptor ===
+- name: Get latest velociraptor release URL
+  ansible.builtin.shell: |
+    curl -s https://api.github.com/repos/Velocidex/velociraptor/releases/latest \
+    | grep browser_download_url \
+    | grep 'linux-amd64"' \
+    | grep -v musl \
+    | grep -v sig \
+    | head -1 \
+    | cut -d '"' -f 4
+  register: velo_url
+  become: false
+  ignore_errors: true
+
+- name: Download velociraptor
+  ansible.builtin.get_url:
+    url: "{{ velo_url.stdout }}"
+    dest: "{{ velociraptor_dir }}/velociraptor"
+    mode: '0755'
+    force: false
+  become: false
+  ignore_errors: true
+  when: velo_url.stdout != "" 
+
+# === CyberChef ===
+- name: Download CyberChef
+  ansible.builtin.get_url:
+    url: "https://github.com/gchq/CyberChef/releases/download/v10.19.4/CyberChef_v10.19.4.zip"
+    dest: "/tmp/cyberchef.zip"
+    mode: '0644'
+    force: false
+  become: false
+  ignore_errors: true
+
+- name: Extract CyberChef
+  ansible.builtin.unarchive:
+    src: /tmp/cyberchef.zip
+    dest: "{{ cyberchef_dir }}"
+    remote_src: yes
+  become: false
+  ignore_errors: true
+
+# === Remove broken zeek repo ===
+- name: Remove zeek repo to keep system clean
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/zeek.list
+    state: absent
+  ignore_errors: true
+
+# === SOC aliases ===
+- name: Deploy soc aliases
+  ansible.builtin.copy:
+    src: soc_aliases.sh
+    dest: "{{ local_home }}/.config/soc_aliases.sh"
+    owner: "{{ local_user }}"
+    mode: '0644'
