@@ -1,0 +1,83 @@
+---
+- name: Create DFIR directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+  loop:
+    - "{{ dfir_dir }}"
+    - "{{ volatility_dir }}"
+
+# === Disk forensics ===
+- name: Install disk forensics tools
+  ansible.builtin.apt:
+    name:
+      - autopsy
+      - sleuthkit
+      - testdisk
+      - dc3dd
+      - dcfldd
+      - ewf-tools
+      - afflib-tools
+      - foremost
+      - scalpel
+      - libewf-dev
+    state: present
+    update_cache: true
+  ignore_errors: true
+
+# === Memory forensics — Volatility3 ===
+- name: Clone volatility3
+  ansible.builtin.git:
+    repo: "https://github.com/volatilityfoundation/volatility3.git"
+    dest: "{{ volatility_dir }}"
+    version: stable
+    force: false
+  become: false
+  ignore_errors: true
+
+- name: Install volatility3 dependencies
+  ansible.builtin.pip:
+    name:
+      - volatility3
+      - pefile
+      - yara-python
+      - capstone
+      - pycryptodome
+    state: present
+    extra_args: --break-system-packages
+  become: false
+  ignore_errors: true
+
+# === File analysis ===
+- name: Install file analysis tools
+  ansible.builtin.apt:
+    name:
+      - binwalk
+      - exiftool
+      - xxd
+      - hexedit
+      - extundelete
+    state: present
+  ignore_errors: true
+
+- name: Install python file analysis packages
+  ansible.builtin.pip:
+    name:
+      - python-magic
+      - olefile
+      - oletools
+      - pdfminer.six
+    state: present
+    extra_args: --break-system-packages
+  become: false
+  ignore_errors: true
+
+# === DFIR aliases ===
+- name: Deploy dfir aliases
+  ansible.builtin.copy:
+    src: dfir_aliases.sh
+    dest: "{{ local_home }}/.config/dfir_aliases.sh"
+    owner: "{{ local_user }}"
+    mode: '0644'

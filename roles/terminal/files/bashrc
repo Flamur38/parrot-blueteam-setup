@@ -174,3 +174,6 @@ else
     PROMPT_COMMAND="__htb_ps1${PROMPT_COMMAND:+;${PROMPT_COMMAND}}"
   fi
 fi
+
+# === DFIR aliases ===
+[[ -f ~/.config/dfir_aliases.sh ]] && source ~/.config/dfir_aliases.sh

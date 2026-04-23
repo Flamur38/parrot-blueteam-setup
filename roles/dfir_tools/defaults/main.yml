@@ -1,0 +1,3 @@
+---
+dfir_dir: "{{ local_home }}/tools/dfir"
+volatility_dir: "{{ dfir_dir }}/volatility3"
