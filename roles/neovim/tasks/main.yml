@@ -1,0 +1,56 @@
+---
+- name: Install neovim dependencies
+  ansible.builtin.apt:
+    name:
+      - git
+      - make
+      - curl
+      - unzip
+      - gcc
+      - ripgrep
+      - fd-find
+      - python3
+      - python3-pip
+      - python3-venv
+      - nodejs
+      - npm
+    state: present
+    update_cache: true
+
+- name: Download neovim appimage
+  ansible.builtin.get_url:
+    url: "https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.appimage"
+    dest: "/usr/local/bin/nvim"
+    mode: '0755'
+    force: false
+
+- name: Install python packages for neovim
+  ansible.builtin.pip:
+    name:
+      - pynvim
+      - black
+      - flake8
+      - mypy
+      - pylint
+      - isort
+    state: present
+    extra_args: --break-system-packages
+
+- name: Remove existing nvim config
+  ansible.builtin.file:
+    path: "{{ nvim_config_dir }}"
+    state: absent
+
+- name: Deploy nvim config
+  ansible.builtin.copy:
+    src: nvim/
+    dest: "{{ nvim_config_dir }}"
+    owner: "{{ local_user }}"
+    mode: '0755'
+    directory_mode: '0755'
+
+- name: Set correct permissions on nvim config files
+  ansible.builtin.shell: |
+    find {{ nvim_config_dir }} -type f -exec chmod 644 {} \;
+    find {{ nvim_config_dir }} -type d -exec chmod 755 {} \;
+  become: false
