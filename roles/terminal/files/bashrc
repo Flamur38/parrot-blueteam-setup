@@ -190,6 +190,7 @@ __inv_ps1() {
   local _exit=$?
   local red='\[\e[38;2;180;40;40m\]'
   local dim='\[\e[38;2;100;100;100m\]'
+  local white='\[\e[38;5;231m\]'
   local rst='\[\e[0m\]'
 
   local err=''
@@ -198,16 +199,21 @@ __inv_ps1() {
   local time
   time=$(date +%H:%M)
 
+  local ip
+  ip=$(ip route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}')
+  [[ -z "$ip" ]] && ip="no-ip"
+
+
   local nl=''
   [[ "${__inv_first:-1}" == "0" ]] && nl=$'\n'
   __inv_first=0
 
-  PS1="${nl}${red}┌─${err}[${dim}inv${red}]─[${red}\w${red}]─[${dim}${time}${red}]"$'\n'"${red}└─❯ ${rst}"
+  PS1="${nl}${dim}[${red}${ip}${dim}]─[${white}\w${dim}]"$'\n'"${red} ❯ ${rst}"
 }
 
 # === Active PS1 — comment/uncomment to switch ===
-ACTIVE_PS1="htb"
-# ACTIVE_PS1="inv"
+# ACTIVE_PS1="htb"
+ACTIVE_PS1="inv"
 
 if [[ "$ACTIVE_PS1" == "inv" ]]; then
   if [[ "${PROMPT_COMMAND}" != *"__inv_ps1"* ]]; then
