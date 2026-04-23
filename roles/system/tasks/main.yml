@@ -1,0 +1,40 @@
+---
+- name: Install fonts via apt
+  ansible.builtin.apt:
+    name:
+      - fonts-hack
+      - fonts-font-awesome
+      - fonts-noto
+      - fonts-firacode
+      - fonts-dejavu
+      - fonts-dejavu-extra
+    state: present
+    update_cache: true
+
+- name: Create local fonts directory
+  ansible.builtin.file:
+    path: "{{ local_home }}/.local/share/fonts"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+
+- name: Download JetBrains Mono
+  ansible.builtin.get_url:
+    url: "https://github.com/JetBrains/JetBrainsMono/releases/download/v2.304/JetBrainsMono-2.304.zip"
+    dest: "/tmp/JetBrainsMono.zip"
+    mode: '0644'
+    force: false
+  become: false
+  ignore_errors: true
+
+- name: Extract JetBrains Mono
+  ansible.builtin.unarchive:
+    src: /tmp/JetBrainsMono.zip
+    dest: "{{ local_home }}/.local/share/fonts/"
+    remote_src: yes
+  become: false
+  ignore_errors: true
+
+- name: Refresh font cache
+  ansible.builtin.shell: fc-cache -fv
+  become: false
