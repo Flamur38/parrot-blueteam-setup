@@ -1,0 +1,84 @@
+# ============================================
+# .bash_aliases — all aliases in one place
+# ============================================
+
+# === Navigation ===
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+
+# === File listing ===
+alias ls='ls --color=auto'
+alias ll='ls -lh --color=auto'
+alias la='ls -lha --color=auto'
+alias l='ls -CF'
+alias dir='dir --color=auto'
+alias vdir='vdir --color=auto'
+
+# === Search ===
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# === System ===
+alias cls='clear'
+alias em='emacs -nw'
+alias _='sudo'
+alias _i='sudo -i'
+alias fucking='sudo'
+alias please='sudo'
+alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+
+# === Archives ===
+alias tarnow='tar -acf '
+alias untar='tar -zxvf '
+
+# === Network ===
+alias wget='wget -c '
+alias ports='ss -tulnp'
+alias listen='ss -tlnp'
+alias sniff='sudo tcpdump -i any -n'
+alias sniff-http='sudo tcpdump -i any -n port 80 or port 443'
+alias sniff-dns='sudo tcpdump -i any -n port 53'
+alias tshark-top='tshark -i any -q -z io,phs'
+
+# === Wireshark / Termshark ===
+alias ws='wireshark &>/dev/null &'
+alias ts='termshark'
+
+# === Log analysis ===
+alias jqp='jq -C . | less -R'
+alias csvp='column -t -s,'
+alias logs-auth='sudo tail -f /var/log/auth.log'
+alias logs-sys='sudo tail -f /var/log/syslog'
+alias logs-kern='sudo tail -f /var/log/kern.log'
+
+# === SOC/DFIR directories ===
+alias logs='cd /var/log && la'
+alias cases='cd ~/cases && la'
+alias pcaps='cd ~/cases/pcaps 2>/dev/null || echo "[!] No pcaps dir — run mkcase first"'
+alias iocs='cd ~/cases/iocs 2>/dev/null || echo "[!] No iocs dir — run mkcase first"'
+
+# === CTF tools ===
+alias hd='hexdump -C'
+alias strings-all='strings -a'
+alias exif='exiftool'
+alias extract='binwalk -e'
+alias entropy='binwalk -E'
+alias magic='file -b'
+alias oleid='oleid'
+alias olemeta='olemeta'
+
+# === Disk forensics ===
+alias autopsy='autopsy &>/dev/null &'
+alias mmls='mmls'
+alias fls='fls'
+
+# === Velociraptor ===
+alias velociraptor='~/tools/velociraptor/velociraptor'
+
+# === CyberChef ===
+alias cyberchef='xdg-open ~/tools/cyberchef/CyberChef_*.html &>/dev/null &'

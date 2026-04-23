@@ -75,3 +75,10 @@
     owner: "{{ local_user }}"
     mode: '0644'
     backup: yes
+
+- name: Deploy bash_aliases
+  ansible.builtin.copy:
+    src: bash_aliases
+    dest: "{{ local_home }}/.bash_aliases"
+    owner: "{{ local_user }}"
+    mode: '0644'
