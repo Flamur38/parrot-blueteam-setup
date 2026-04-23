@@ -1,5 +1,8 @@
 ! DPI scaling — increase for HiDPI
-Xft.dpi: 144
+! 150% - 144
+! 175% - 168
+! 200% - 192
+Xft.dpi: 168
 Xft.autohint: 0
 Xft.lcdfilter: lcddefault
 Xft.hintstyle: hintfull
