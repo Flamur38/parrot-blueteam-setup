@@ -73,6 +73,18 @@
     owner: "{{ local_user }}"
     mode: '0644'
 
+- name: Deploy .Xresources
+  ansible.builtin.copy:
+    src: .Xresources
+    dest: "{{ local_home }}/.Xresources"
+    owner: "{{ local_user }}"
+    mode: '0644'
+
+- name: Apply .Xresources
+  ansible.builtin.shell: xrdb -merge {{ local_home }}/.Xresources
+  become: false
+  ignore_errors: true
+
 - name: Generate HTB wallpaper
   ansible.builtin.shell: |
     python3 -c "
@@ -80,12 +92,10 @@
     w, h = 1920, 1080
     img = Image.new('RGB', (w, h), '#1a2332')
     d = ImageDraw.Draw(img)
-    # subtle grid lines
     for x in range(0, w, 80):
         d.line([(x, 0), (x, h)], fill='#1e2a3a', width=1)
     for y in range(0, h, 80):
         d.line([(0, y), (w, y)], fill='#1e2a3a', width=1)
-    # HTB green accent line at bottom
     d.rectangle([(0, h-3), (w, h)], fill='#c5f467')
     img.save('{{ wallpaper_dir }}/htb.png')
     "
@@ -100,12 +110,10 @@
     w, h = 1920, 1080
     img = Image.new('RGB', (w, h), '#0a0a0a')
     d = ImageDraw.Draw(img)
-    # subtle grid lines
     for x in range(0, w, 80):
         d.line([(x, 0), (x, h)], fill='#111111', width=1)
     for y in range(0, h, 80):
         d.line([(0, y), (w, y)], fill='#111111', width=1)
-    # dark red accent line at bottom
     d.rectangle([(0, h-3), (w, h)], fill='#b42828')
     img.save('{{ wallpaper_dir }}/inv.png')
     "

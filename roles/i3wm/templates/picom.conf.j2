@@ -1,21 +1,18 @@
 # === Shadows ===
 shadow = false;
 
-# === Fading ===
-fading = true;
-fade-in-step  = 0.05;
-fade-out-step = 0.05;
-fade-delta    = 5;
+# === Fading — disabled to reduce lag ===
+fading = false;
 
 # === Opacity ===
-inactive-opacity         = 0.92;
-active-opacity           = 1.0;
-frame-opacity            = 1.0;
+inactive-opacity          = 1.0;
+active-opacity            = 1.0;
+frame-opacity             = 1.0;
 inactive-opacity-override = false;
 
 # === Corners ===
-corner-radius = 6;
+corner-radius = 0;
 
 # === Backend ===
-backend = "glx";
-vsync   = true;
+backend = "xrender";
+vsync   = false;

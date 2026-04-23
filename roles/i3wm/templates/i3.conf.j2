@@ -1,14 +1,14 @@
 # === Mod key ===
-set $mod {{ mod_key }}
+set $mod Mod1
 
 # === Font ===
 font pango:Hack 10
 
 # === Autostart ===
 exec --no-startup-id {{ polybar_config_dir }}/launch.sh
-exec --no-startup-id picom --daemon
 exec --no-startup-id dunst
 exec --no-startup-id feh --bg-scale {{ wallpaper_dir }}/htb.png
+exec --no-startup-id xrdb -merge {{ local_home }}/.Xresources
 
 # === Terminal ===
 bindsym $mod+Return exec {{ terminal }}
@@ -16,8 +16,8 @@ bindsym $mod+Return exec {{ terminal }}
 # === Rofi launcher ===
 # HTB mode   → comment inv, uncomment htb
 # Inv mode   → comment htb, uncomment inv
-bindsym $mod+d exec rofi -show drun -theme {{ rofi_config_dir }}/htb.rasi
-# bindsym $mod+d exec rofi -show drun -theme {{ rofi_config_dir }}/inv.rasi
+bindsym $mod+d exec --no-startup-id "rofi -show drun -theme {{ rofi_config_dir }}/htb.rasi"
+# bindsym $mod+d exec --no-startup-id "rofi -show drun -theme {{ rofi_config_dir }}/inv.rasi"
 
 # === Kill focused window ===
 bindsym $mod+q kill
@@ -123,13 +123,12 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # === Lock screen ===
-bindsym $mod+shift+x exec i3lock -c 0a0a0a
+bindsym $mod+Shift+x exec i3lock -c 0a0a0a
 
 # === Screenshot ===
 bindsym Print exec scrot ~/Pictures/screenshot_%Y%m%d_%H%M%S.png
 
 # === Colors — HTB theme ===
-# class                 border    bg        text      indicator child_border
 client.focused          #c5f467   #1a2332   #c5f467   #c5f467   #c5f467
 client.focused_inactive #313f55   #1a2332   #a4b1cd   #313f55   #313f55
 client.unfocused        #1a2332   #1a2332   #646464   #1a2332   #1a2332
