@@ -120,3 +120,8 @@
   become: false
   args:
     creates: "{{ wallpaper_dir }}/inv.png"
+
+- name: Remove old parrot polybar config if exists
+  ansible.builtin.file:
+    path: "{{ local_home }}/.config/polybar/config"
+    state: absent
