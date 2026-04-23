@@ -8,5 +8,5 @@ local_bin:  "{{ local_home }}/.local/bin"
 
 # Theme
 colorscheme: "hackthebox"
-font_family: "Hack"
+font_family: "Monospace"
 font_size:   "15"
