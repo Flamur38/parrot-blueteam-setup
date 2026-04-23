@@ -1,5 +1,4 @@
 [colors]
-; HTB colors
 bg       = #1a2332
 fg       = #a4b1cd
 green    = #c5f467
@@ -11,7 +10,7 @@ white    = #ffffff
 [bar/main]
 monitor               =
 width                 = 100%
-height                = 36
+height                = 40
 offset-x              = 0
 offset-y              = 0
 radius                = 0
@@ -25,18 +24,23 @@ line-size             = 2
 line-color            = ${colors.green}
 
 border-size           = 0
-padding-left          = 1
-padding-right         = 1
+padding-left          = 2
+padding-right         = 2
 module-margin-left    = 1
 module-margin-right   = 1
 
-font-0                = Hack:pixelsize=13;3
-font-1                = Font Awesome 6 Free:style=Solid:pixelsize=13;3
-font-2                = Font Awesome 6 Brands:pixelsize=13;3
+font-0                = Hack:pixelsize=14;3
+font-1                = Font Awesome 6 Free:style=Solid:pixelsize=14;3
+font-2                = Font Awesome 6 Brands:pixelsize=14;3
 
-modules-left          = i3 
+modules-left          = i3
 modules-center        = date
-modules-right         = ip cpu memory
+modules-right         = ip cpu memory tray
+
+tray-position         = right
+tray-padding          = 4
+tray-maxsize          = 20
+tray-background       = ${colors.bg}
 
 separator             = %{F#313f55}│%{F-}
 wm-restack            = i3
@@ -56,15 +60,15 @@ label-focused         = %index%
 label-focused-foreground = ${colors.green}
 label-focused-background = ${colors.dim}
 label-focused-underline  = ${colors.green}
-label-focused-padding    = 2
+label-focused-padding    = 3
 
 label-unfocused         = %index%
 label-unfocused-foreground = ${colors.fg}
-label-unfocused-padding    = 2
+label-unfocused-padding    = 3
 
 label-urgent            = %index%
 label-urgent-foreground = ${colors.red}
-label-urgent-padding    = 2
+label-urgent-padding    = 3
 
 [module/date]
 type                  = internal/date
@@ -100,6 +104,11 @@ format-prefix         = " "
 format-prefix-foreground = ${colors.cyan}
 label                 = %percentage_used%%
 label-foreground      = ${colors.fg}
+
+[module/tray]
+type                  = internal/tray
+icon-size             = 20
+icon-padding          = 4
 
 [settings]
 screenchange-reload   = true
