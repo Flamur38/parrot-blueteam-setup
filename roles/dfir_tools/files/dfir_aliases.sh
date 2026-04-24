@@ -1,10 +1,10 @@
 # === Volatility3 ===
-volps()    { python3 ~/tools/dfir/volatility3/vol.py -f "$1" windows.pslist; }
-volnet()   { python3 ~/tools/dfir/volatility3/vol.py -f "$1" windows.netstat; }
-volfiles() { python3 ~/tools/dfir/volatility3/vol.py -f "$1" windows.filescan; }
-volcmd()   { python3 ~/tools/dfir/volatility3/vol.py -f "$1" windows.cmdline; }
-volhash()  { python3 ~/tools/dfir/volatility3/vol.py -f "$1" windows.hashdump; }
-volmalfind() { python3 ~/tools/dfir/volatility3/vol.py -f "$1" windows.malfind; }
+volps()    { python3 ~/tools/volatility3/vol.py -f "$1" windows.pslist; }
+volnet()   { python3 ~/tools/volatility3/vol.py -f "$1" windows.netstat; }
+volfiles() { python3 ~/tools/volatility3/vol.py -f "$1" windows.filescan; }
+volcmd()   { python3 ~/tools/volatility3/vol.py -f "$1" windows.cmdline; }
+volhash()  { python3 ~/tools/volatility3/vol.py -f "$1" windows.hashdump; }
+volmalfind() { python3 ~/tools/volatility3/vol.py -f "$1" windows.malfind; }
 volall() {
   local mem="$1"
   if [[ -z "$mem" ]]; then
@@ -79,3 +79,28 @@ triage() {
 alias magic='file -b'
 alias oleid='oleid'
 alias olemeta='olemeta'
+
+# === Chainsaw ===
+alias chainsaw='~/.local/bin/chainsaw'
+
+# Hunt Windows event logs with sigma rules
+chainsaw-hunt() {
+  local evtx_dir="$1"
+  local rules_dir="${2:-~/tools/chainsaw/rules}"
+  if [[ -z "$evtx_dir" ]]; then
+    echo "Usage: chainsaw-hunt <evtx_dir> [rules_dir]"
+    return 1
+  fi
+  chainsaw hunt "$evtx_dir" -s "$rules_dir" --mapping ~/tools/chainsaw/mappings/sigma-event-logs-all.yml
+}
+
+# Search Windows event logs
+chainsaw-search() {
+  local term="$1"
+  local evtx_dir="$2"
+  if [[ -z "$term" || -z "$evtx_dir" ]]; then
+    echo "Usage: chainsaw-search <term> <evtx_dir>"
+    return 1
+  fi
+  chainsaw search "$term" "$evtx_dir"
+}

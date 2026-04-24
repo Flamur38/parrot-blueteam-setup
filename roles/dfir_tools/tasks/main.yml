@@ -74,6 +74,40 @@
   become: false
   ignore_errors: true
 
+# === Chainsaw ===
+- name: Create chainsaw directory
+  ansible.builtin.file:
+    path: "{{ dfir_dir }}/chainsaw"
+    state: directory
+    owner: "{{ local_user }}"
+    mode: '0755'
+
+- name: Download chainsaw
+  ansible.builtin.get_url:
+    url: "https://github.com/WithSecureLabs/chainsaw/releases/download/v2.14.1/chainsaw_x86_64-unknown-linux-gnu.tar.gz"
+    dest: "/tmp/chainsaw.tar.gz"
+    mode: '0644'
+    force: false
+  become: false
+  ignore_errors: true
+
+- name: Extract chainsaw
+  ansible.builtin.unarchive:
+    src: /tmp/chainsaw.tar.gz
+    dest: "{{ dfir_dir }}/chainsaw"
+    remote_src: yes
+  become: false
+  ignore_errors: true
+
+- name: Symlink chainsaw to local bin
+  ansible.builtin.file:
+    src: "{{ dfir_dir }}/chainsaw/chainsaw"
+    dest: "{{ local_home }}/.local/bin/chainsaw"
+    state: link
+    force: true
+  become: false
+  ignore_errors: true
+
 # === DFIR aliases ===
 - name: Deploy dfir aliases
   ansible.builtin.copy:
