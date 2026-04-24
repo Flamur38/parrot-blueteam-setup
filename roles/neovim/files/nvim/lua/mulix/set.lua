@@ -49,3 +49,35 @@ vim.opt.scrolloff = 8           -- Keep 8 lines visible above/below cursor
 vim.opt.guicursor = ""          -- Keep block cursor in all modes
 
 
+
+-- Remove background from comments globally
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = "*",
+  callback = function()
+    local comment = vim.api.nvim_get_hl(0, { name = "Comment" })
+    comment.bg = nil
+    vim.api.nvim_set_hl(0, "Comment", comment)
+    vim.api.nvim_set_hl(0, "SpecialComment", { bg = "NONE" })
+  end,
+})
+
+-- Force no background on all highlight groups for all themes
+local function clear_backgrounds()
+  local groups = {
+    "CursorLine", "CursorLineNr", "Folded", "Comment",
+    "shConditional", "shFunction", "shStatement", "shRepeat",
+    "shException", "shOperator", "shOption", "shCommandSub",
+    "Statement", "Conditional", "Repeat", "Function",
+    "Keyword", "Special", "SpecialChar", "Tag",
+  }
+  for _, group in ipairs(groups) do
+    local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = group })
+    if ok and hl then
+      hl.bg = nil
+      pcall(vim.api.nvim_set_hl, 0, group, hl)
+    end
+  end
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", { pattern = "*", callback = clear_backgrounds })
+vim.api.nvim_create_autocmd("VimEnter",    { pattern = "*", callback = clear_backgrounds })

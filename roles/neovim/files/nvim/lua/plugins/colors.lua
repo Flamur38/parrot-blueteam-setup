@@ -2,60 +2,83 @@
 
 -- -- HTB profile (default)
 return {
-  "kaiuri/nvim-juliana",
+  "catppuccin/nvim",
+  name = "catppuccin",
   lazy = false,
   priority = 1000,
   config = function()
-    require("nvim-juliana").setup({
-      transparent = true,
+    require("catppuccin").setup({
+      flavour = "mocha",
+      transparent_background = true,
+      show_end_of_buffer = false,
+      term_colors = true,
+      no_italic = false,
+      no_bold = false,
+      styles = {
+        comments = {},
+        conditionals = {},
+        loops = {},
+        functions = {},
+        keywords = {},
+        strings = {},
+        variables = {},
+        numbers = {},
+        booleans = {},
+        properties = {},
+        types = {},
+        operators = {},
+      },
+      integrations = {
+        cmp = true,
+        telescope = true,
+        harpoon = true,
+        mason = true,
+      },
     })
-    vim.cmd("colorscheme juliana")
-    vim.cmd [[
-      highlight Normal         guibg=NONE ctermbg=NONE
-      highlight NormalNC       guibg=NONE ctermbg=NONE
-      highlight SignColumn     guibg=NONE ctermbg=NONE
-      highlight VertSplit      guibg=NONE ctermbg=NONE
-      highlight EndOfBuffer    guibg=NONE ctermbg=NONE
-      highlight CursorLine     guibg=NONE ctermbg=NONE
-      highlight CursorLineNr   guibg=NONE ctermbg=NONE
-    ]]
+    vim.cmd("colorscheme catppuccin-mocha")
+
+    vim.api.nvim_create_autocmd("VimEnter", {
+      pattern = "*",
+      callback = function()
+        vim.api.nvim_set_hl(0, "Normal",        { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "NormalNC",      { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "SignColumn",    { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "EndOfBuffer",   { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "CursorLine",    { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "CursorLineNr",  { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "Comment",       { fg = "#6c7086", bg = "NONE" })
+        vim.api.nvim_set_hl(0, "Visual",        { bg = "#2d3f55" })
+        vim.api.nvim_set_hl(0, "VisualNOS",     { bg = "#2d3f55" })
+      end,
+    })
   end,
 }
 
 -- -- Investigation profile
 -- return {
---   "rose-pine/neovim",
---   name = "rose-pine",
+--   "folke/tokyonight.nvim",
 --   lazy = false,
 --   priority = 1000,
 --   config = function()
---     require("rose-pine").setup({
---       variant = "auto",
---       dark_variant = "main",
---       dim_inactive_windows = false,
---       extend_background_behind_borders = true,
---       enable = {
---         terminal = true,
---         legacy_highlights = true,
---         migrations = true,
---       },
+--     require("tokyonight").setup({
+--       style = "storm",
+--       transparent = true,
+--       terminal_colors = true,
 --       styles = {
---         bold = true,
---         italic = true,
---         transparency = true,
+--         comments = {},
+--         keywords = {},
+--         functions = {},
+--         variables = {},
+--         sidebars = "transparent",
+--         floats = "transparent",
 --       },
---       highlight_groups = {
---         Function   = { fg = "#E95420" },
---         Identifier = { fg = "#77216F" },
---         Normal       = { bg = "none" },
---         NormalNC     = { bg = "none" },
---         SignColumn   = { bg = "none" },
---         VertSplit    = { bg = "none" },
---         EndOfBuffer  = { bg = "none" },
---         CursorLine   = { bg = "none" },
---         CursorLineNr = { bg = "none" },
---       },
+--       on_highlights = function(hl, c)
+--         hl.CursorLine   = { bg = "NONE" }
+--         hl.CursorLineNr = { bg = "NONE" }
+--         hl.Comment      = { fg = c.comment, bg = "NONE" }
+--         hl.Folded       = { fg = c.blue, bg = "NONE" }
+--       end,
 --     })
---     vim.cmd("colorscheme rose-pine")
+--     vim.cmd("colorscheme tokyonight-storm")
 --   end,
 -- }

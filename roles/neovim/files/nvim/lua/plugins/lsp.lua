@@ -1,4 +1,4 @@
--- LSP Support (nvim 0.11+ native API)
+-- LSP Support (nvim 0.11+ native vim.lsp.config API)
 return {
     'neovim/nvim-lspconfig',
     event = 'VeryLazy',
@@ -9,7 +9,6 @@ return {
         { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
-        -- Mason setup
         require('mason').setup()
         require('mason-lspconfig').setup({
             ensure_installed = {
@@ -34,33 +33,6 @@ return {
 
         require('fidget').setup({})
 
-        -- Keymaps on LSP attach
-        vim.api.nvim_create_autocmd('LspAttach', {
-            group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
-            callback = function(event)
-                local map = function(keys, func, desc)
-                    vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc })
-                end
-
-                map('gd',          vim.lsp.buf.definition,     'Go to definition')
-                map('K',           vim.lsp.buf.hover,           'Hover docs')
-                map('gr',          vim.lsp.buf.references,      'References')
-                map('gi',          vim.lsp.buf.implementation,  'Implementation')
-                map('<leader>rn',  vim.lsp.buf.rename,          'Rename')
-                map('<leader>ca',  vim.lsp.buf.code_action,     'Code action')
-                map('<leader>tt',  '<Cmd>!pytest %<CR>',        'Run pytest')
-
-                -- Diagnostics
-                vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-                    vim.lsp.diagnostic.on_publish_diagnostics, {
-                        virtual_text = true,
-                        signs = true,
-                        update_in_insert = false,
-                    }
-                )
-            end,
-        })
-
         -- Capabilities for cmp
         local capabilities = vim.lsp.protocol.make_client_capabilities()
         local ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
@@ -78,15 +50,37 @@ return {
             return 'python3'
         end
 
-        -- Setup LSPs
-        local lspconfig = require('lspconfig')
+        -- Keymaps on LSP attach
+        vim.api.nvim_create_autocmd('LspAttach', {
+            group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
+            callback = function(event)
+                local map = function(keys, func)
+                    vim.keymap.set('n', keys, func, { buffer = event.buf })
+                end
+                map('gd',         vim.lsp.buf.definition)
+                map('K',          vim.lsp.buf.hover)
+                map('gr',         vim.lsp.buf.references)
+                map('gi',         vim.lsp.buf.implementation)
+                map('<leader>rn', vim.lsp.buf.rename)
+                map('<leader>ca', vim.lsp.buf.code_action)
+                map('<leader>tt', '<Cmd>!pytest %<CR>')
+            end,
+        })
 
-        local servers = { 'bashls', 'lemminx', 'marksman' }
-        for _, server in ipairs(servers) do
-            lspconfig[server].setup({ capabilities = capabilities })
-        end
+        -- Rounded borders for floating windows (nvim 0.11+ way)
+        vim.diagnostic.config({
+            float = { border = 'rounded' },
+            virtual_text = true,
+            signs = true,
+            update_in_insert = false,
+        })
 
-        lspconfig.lua_ls.setup({
+        -- Configure servers using new vim.lsp.config API
+        vim.lsp.config('bashls',   { capabilities = capabilities })
+        vim.lsp.config('lemminx',  { capabilities = capabilities })
+        vim.lsp.config('marksman', { capabilities = capabilities })
+
+        vim.lsp.config('lua_ls', {
             capabilities = capabilities,
             settings = {
                 Lua = {
@@ -95,7 +89,7 @@ return {
             },
         })
 
-        lspconfig.pyright.setup({
+        vim.lsp.config('pyright', {
             capabilities = capabilities,
             before_init = function(_, config)
                 local root_dir = config.root_dir or vim.fn.getcwd()
@@ -107,12 +101,7 @@ return {
             end,
         })
 
-        -- Rounded borders for floating windows
-        local orig_util = vim.lsp.util.open_floating_preview
-        function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-            opts = opts or {}
-            opts.border = opts.border or "rounded"
-            return orig_util(contents, syntax, opts, ...)
-        end
+        -- Enable all configured servers
+        vim.lsp.enable({ 'bashls', 'lua_ls', 'pyright', 'lemminx', 'marksman' })
     end
 }
