@@ -89,7 +89,7 @@
   ansible.builtin.shell: |
     python3 -c "
     from PIL import Image, ImageDraw
-    w, h = 1920, 1080
+    w, h = 3840, 2560
     img = Image.new('RGB', (w, h), '#1a2332')
     d = ImageDraw.Draw(img)
     for x in range(0, w, 80):
@@ -107,7 +107,7 @@
   ansible.builtin.shell: |
     python3 -c "
     from PIL import Image, ImageDraw
-    w, h = 1920, 1080
+    w, h = 3840, 2560
     img = Image.new('RGB', (w, h), '#0a0a0a')
     d = ImageDraw.Draw(img)
     for x in range(0, w, 80):

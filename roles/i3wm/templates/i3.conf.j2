@@ -7,7 +7,7 @@ font pango:Hack 25
 # === Autostart ===
 exec --no-startup-id {{ polybar_config_dir }}/launch.sh
 exec --no-startup-id dunst
-exec --no-startup-id feh --bg-scale {{ wallpaper_dir }}/htb.png
+exec --no-startup-id feh --bg-scale {{ wallpaper_dir }}/inv.png
 exec --no-startup-id xrdb -merge {{ local_home }}/.Xresources
 
 # === Terminal ===
@@ -16,8 +16,8 @@ bindsym $mod+Return exec {{ terminal }}
 # === Rofi launcher ===
 # HTB mode   → comment inv, uncomment htb
 # Inv mode   → comment htb, uncomment inv
-bindsym $mod+d exec --no-startup-id "rofi -show drun -theme {{ rofi_config_dir }}/htb.rasi"
-# bindsym $mod+d exec --no-startup-id "rofi -show drun -theme {{ rofi_config_dir }}/inv.rasi"
+bindsym $mod+d exec --no-startup-id "rofi -show drun -theme {{ rofi_config_dir }}/inv.rasi"
+# bindsym $mod+d exec --no-startup-id "rofi -show drun -theme {{ rofi_config_dir }}/htb.rasi"
 
 # === Kill focused window ===
 bindsym $mod+q kill
