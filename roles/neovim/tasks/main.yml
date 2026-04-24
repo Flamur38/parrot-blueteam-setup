@@ -23,6 +23,7 @@
     dest: "/usr/local/bin/nvim"
     mode: '0755'
     force: false
+    timeout: 60
 
 - name: Install python packages for neovim
   ansible.builtin.pip:

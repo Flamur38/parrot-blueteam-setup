@@ -41,8 +41,6 @@ opt.mouse = ""                   -- No mouse support
 
 -- Folding
 opt.foldlevel = 20              -- Open most folds by default
-opt.foldmethod = "expr"         -- Use expression-based folding
-opt.foldexpr = "nvim_treesitter#foldexpr()" -- Use Treesitter for folding
 
 -- Scrolling
 vim.opt.scrolloff = 8           -- Keep 8 lines visible above/below cursor

@@ -1,4 +1,4 @@
--- LSP Support
+-- LSP Support (nvim 0.11+ native API)
 return {
     'neovim/nvim-lspconfig',
     event = 'VeryLazy',
@@ -7,9 +7,8 @@ return {
         { 'williamboman/mason-lspconfig.nvim' },
         { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
         { 'j-hui/fidget.nvim', opts = {} },
-        { 'folke/neodev.nvim', opts = {} },
     },
-    config = function ()
+    config = function()
         -- Mason setup
         require('mason').setup()
         require('mason-lspconfig').setup({
@@ -19,11 +18,9 @@ return {
                 'pyright',
                 'lemminx',
                 'marksman',
-                'quick_lint_js',
             }
         })
 
-        -- Mason tool installer setup
         require('mason-tool-installer').setup({
             ensure_installed = {
                 'black',
@@ -32,80 +29,74 @@ return {
                 'isort',
                 'mypy',
                 'pylint',
-                'pytest',
-                'ipython',
-                'jupyter',
             },
         })
 
         require('fidget').setup({})
 
-        local lspconfig = require('lspconfig')
-        local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+        -- Keymaps on LSP attach
+        vim.api.nvim_create_autocmd('LspAttach', {
+            group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
+            callback = function(event)
+                local map = function(keys, func, desc)
+                    vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc })
+                end
 
-        -- Python path detection (for virtualenv support)
+                map('gd',          vim.lsp.buf.definition,     'Go to definition')
+                map('K',           vim.lsp.buf.hover,           'Hover docs')
+                map('gr',          vim.lsp.buf.references,      'References')
+                map('gi',          vim.lsp.buf.implementation,  'Implementation')
+                map('<leader>rn',  vim.lsp.buf.rename,          'Rename')
+                map('<leader>ca',  vim.lsp.buf.code_action,     'Code action')
+                map('<leader>tt',  '<Cmd>!pytest %<CR>',        'Run pytest')
+
+                -- Diagnostics
+                vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+                    vim.lsp.diagnostic.on_publish_diagnostics, {
+                        virtual_text = true,
+                        signs = true,
+                        update_in_insert = false,
+                    }
+                )
+            end,
+        })
+
+        -- Capabilities for cmp
+        local capabilities = vim.lsp.protocol.make_client_capabilities()
+        local ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
+        if ok then
+            capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
+        end
+
+        -- Python path detection
         local function get_python_path(workspace)
-            -- Use activated virtualenv
             if vim.env.VIRTUAL_ENV then
                 return vim.env.VIRTUAL_ENV .. '/bin/python'
             end
-            -- Look for venv folder in workspace
             local match = vim.fn.glob(workspace .. '/.venv/bin/python')
             if match ~= '' then return match end
-            return 'python3' -- Default fallback
-        end
-
-        local lsp_attach = function(client, bufnr)
-            vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-                virtual_text = true,
-                signs = true,
-                update_in_insert = false,
-            })
-
-            local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-            local opts = { noremap = true, silent = true }
-
-            buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-            buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-            buf_set_keymap('n', 'gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
-            buf_set_keymap('n', 'gi', '<Cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-            buf_set_keymap('n', '<leader>rn', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
-            buf_set_keymap('n', '<leader>ca', '<Cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-
-            -- This keymap binds <leader>tt to run pytest on the current Python file.
-            -- `!pytest %` invokes the shell command `pytest` on the current file in the buffer, 
-            -- and the result will be shown in the Neovim command line.
-            buf_set_keymap('n', '<leader>tt', '<Cmd>!pytest %<CR>', opts)
-
-            if client.server_capabilities.document_formatting then
-                vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
-            end
+            return 'python3'
         end
 
         -- Setup LSPs
-        local servers = { 'bashls', 'lua_ls', 'lemminx', 'marksman', 'quick_lint_js' }
+        local lspconfig = require('lspconfig')
+
+        local servers = { 'bashls', 'lemminx', 'marksman' }
         for _, server in ipairs(servers) do
-            lspconfig[server].setup({
-                on_attach = lsp_attach,
-                capabilities = lsp_capabilities,
-            })
+            lspconfig[server].setup({ capabilities = capabilities })
         end
 
-        -- Lua-specific settings
         lspconfig.lua_ls.setup({
-            on_attach = lsp_attach,
-            capabilities = lsp_capabilities,
+            capabilities = capabilities,
             settings = {
                 Lua = {
-                    diagnostics = { globals = {'vim'} },
+                    diagnostics = { globals = { 'vim' } },
                 },
             },
         })
 
-        -- Python-specific settings
         lspconfig.pyright.setup({
-            on_attach = lsp_attach,
-            capabilities = lsp_capabilities,
+            capabilities = capabilities,
             before_init = function(_, config)
                 local root_dir = config.root_dir or vim.fn.getcwd()
                 config.settings = {
